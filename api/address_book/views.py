@@ -1,5 +1,13 @@
-from django.http import JsonResponse
+from django.contrib.auth.models import User
+from rest_framework import viewsets
+from rest_framework import permissions
+from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
 
 
-def apiOverview(request):
-    return JsonResponse("API Base Point", safe=False)
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all().order_by('last_name')
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]

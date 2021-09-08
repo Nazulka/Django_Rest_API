@@ -45,13 +45,14 @@ def userCreate(request):
     return Response(serializer.data)
 
 
-@api_view(['POST'])
+@api_view(['PUT'])
 def userUpdate(request, pk):
     user = User.objects.get(id=pk)
     serializer = UserSerializer(instance=user, data=request.data)
-
+    data = {}
     if serializer.is_valid():
         serializer.save()
+        data['success'] = 'Update successful!'
 
     return Response(serializer.data)
 

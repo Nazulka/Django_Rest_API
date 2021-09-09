@@ -4,40 +4,46 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-from .models import User
-from .serializers import UserSerializer
+from .models import User, Address
+from .serializers import UserSerializer, AddressSerializer
 
 
 @api_view(['GET'])
 def apiOverview(request):
     api_urls = {
-        'List': '/user-list/',
-        'Detail View': 'user-detail/<str:pk>/',
-        'Create': 'user-create/',
-        'Update': 'user-update/<str:pk>/',
-        'Delete': '/user-delete/<str:pk>',
+        'List': '/address-list/',
+        'Detail View': 'address-detail/<str:pk>/',
+        'Create': 'address-create/',
+        'Update': 'address-update/<str:pk>/',
+        'Delete': '/address-delete/<str:pk>',
         }
 
     return Response(api_urls)
 
 
 @api_view(['GET'])
-def userList(request):
-    users = User.objects.all()
-    serializer = UserSerializer(users, many=True)
-    return Response(serializer.data)
+def addressList(request):
+    user = User.objects.all()
+    addresses = Address.objects.all()
+
+    user_serializer = UserSerializer(user, many=False)
+    address_serializer = AddressSerializer(addresses, many=True)
+    return Response({
+        'user': user_serializer.data,
+        'addresses': address_serializer.data
+    })
 
 
 @api_view(['GET'])
-def userDetail(request, pk):
-    user = User.objects.get(id=pk)
-    serializer = UserSerializer(user, many=False)
+def addressDetail(request, pk):
+    address = Address.objects.get(id=pk)
+    serializer = AddressSerializer(address, many=False)
     return Response(serializer.data)
 
 
 @api_view(['POST'])
-def userCreate(request):
-    serializer = UserSerializer(data=request.data)
+def addressCreate(request):
+    serializer = AddressSerializer(data=request.data)
 
     if serializer.is_valid():
         serializer.save()
@@ -46,9 +52,9 @@ def userCreate(request):
 
 
 @api_view(['PUT'])
-def userUpdate(request, pk):
-    user = User.objects.get(id=pk)
-    serializer = UserSerializer(instance=user, data=request.data)
+def addressUpdate(request, pk):
+    user = Address.objects.get(id=pk)
+    serializer = AddressSerializer(instance=address, data=request.data)
     data = {}
     if serializer.is_valid():
         serializer.save()
@@ -58,7 +64,7 @@ def userUpdate(request, pk):
 
 
 @api_view(['DELETE'])
-def userDelete(request, pk):
-    user = User.objects.get(id=pk)
-    user.delete()
+def addressDelete(request, pk):
+    address = Address.objects.get(id=pk)
+    address.delete()
     return Response('User successfully deleted!')

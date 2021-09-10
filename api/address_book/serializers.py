@@ -3,13 +3,17 @@ from .models import User, Address
 
 
 class UserSerializer(serializers.ModelSerializer):
+    address = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Address.objects.all())
 
     class Meta:
         model = User
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'address']
 
 
 class AddressSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
         model = Address
         fields = ['id', 'address', 'user']

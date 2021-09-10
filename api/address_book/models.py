@@ -9,9 +9,14 @@ class User(models.Model):
 
 
 class Address(models.Model):
-    address = models.CharField(max_length=100)
     user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, blank=True, null=True)
+        User, on_delete=models.CASCADE, blank=True, null=True)
+    address_name = models.CharField(max_length=100, blank=True, default='')
+    address = models.CharField(max_length=100)
+    country = models.CharField(max_length=100, default='UK')
+    
+    class Meta:
+        verbose_name_plural = 'Addresses'
 
     def __str__(self):
         return self.address

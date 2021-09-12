@@ -13,10 +13,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 class AddressSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
+    address_name = serializers.CharField(
+        required=False, allow_blank=True, max_length=100)
+    address = serializers.CharField(required=True, max_length=100)
+    country = serializers.CharField(max_length=100, default='UK')
 
     class Meta:
         model = Address
-        fields = ['id', 'address', 'user']
+        fields = ['id', 'user', 'address_name', 'address', 'country']
 
     def create(self, validated_data):
         """
@@ -28,6 +32,10 @@ class AddressSerializer(serializers.ModelSerializer):
         """
         Update and return an existing `Address` instance, given the validated data.
         """
+        instance.address_name = validated_data.get(
+            'address_name', instance.address_name)
         instance.address = validated_data.get('address', instance.address)
+        instance.country = validated_data.get('country', instance.country)
+
         instance.save()
         return instance

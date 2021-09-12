@@ -2,9 +2,26 @@ from rest_framework import generics
 from rest_framework import permissions
 from .models import User, Address
 from .serializers import UserSerializer, AddressSerializer
+from address_book.permissions import IsOwnerOrReadOnly
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        'Address List': '/address-list/',
+        'Address Detail View': 'address/<int:pk>/',
+        'User List': 'users/',
+        'User Details': 'users/<int:pk>/',
+        # 'users': reverse('users-list', request=request, format=format),
+        # 'address': reverse('address-list', request=request, format=format)
+    })
 
 
 class AddressList(generics.ListCreateAPIView):
+    user = User.objects.all()
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -16,7 +33,7 @@ class AddressList(generics.ListCreateAPIView):
 class AddressDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
  
 
 class UserList(generics.ListAPIView):
